@@ -81,7 +81,45 @@ fastqc Chara_R2.fastq.gz -o output
  multiqc output
  mv multiqc_report.html output
  
+#Implementing bwa (for alligning sequence reads to the reference genome)
 
+#repair files udsing bbtools
+
+conda install -c bioconda bbmap
+repair.sh
+
+sudo apt install bwa
+sudo apt install samtools
+touch aligner.sh 
+nano aligner.sh 
+
+#!/bin/bash
+
+SAMPLES=(
+  "ACBarrie"
+  "Alsen"
+  "Baxter"
+  "Chara"
+ 
+)
+
+bwa index references/reference.fasta
+mkdir repaired
+mkdir alignment_map
+
+for SAMPLE in "${SAMPLES[@]}"; do
+
+    repair.sh in1="trimmed_reads/${SAMPLE}_R1.fastq.gz" in2="trimmed_reads/${SAMPLE}_R2.fastq.gz" out1="repaired/${SAMPLE}_R1_rep.fastq.gz" out2="re>
+    echo $PWD
+    bwa mem -t 1 \
+    references/reference.fasta \
+    "repaired/${SAMPLE}_R1_rep.fastq.gz" "repaired/${SAMPLE}_R2_rep.fastq.gz" \
+  | samtools view -b \
+  > "alignment_map/${SAMPLE}.bam"
+done
+
+
+bash aligner.sh
 
 
 
