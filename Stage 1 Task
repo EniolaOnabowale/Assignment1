@@ -81,15 +81,21 @@ fastqc Chara_R2.fastq.gz -o output
  multiqc output
  mv multiqc_report.html output
  
-#Implementing bwa (for alligning sequence reads to the reference genome)
 
-#repair files udsing bbtools
+#Repair files udsing bbtools
 
 conda install -c bioconda bbmap
 repair.sh
 
+#Implementing bwa (for alligning sequence reads to the reference genome)
+
 sudo apt install bwa
 sudo apt install samtools
+
+mkdir references
+cd references
+wget https://github.com/josoga2/yt-dataset/raw/main/dataset/references/reference.fasta
+
 touch aligner.sh 
 nano aligner.sh 
 
