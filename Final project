@@ -1,0 +1,3 @@
+# download tsv file containing sample information from 1000 genomes
+$ wget https://raw.githubusercontent.com/HackBio-Internship/public_datasets/main/Global_genome_structure_project/complete_1000_genomes_sample_list_.tsv
+
