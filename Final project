@@ -1,3 +1,50 @@
 # download tsv file containing sample information from 1000 genomes
 $ wget https://raw.githubusercontent.com/HackBio-Internship/public_datasets/main/Global_genome_structure_project/complete_1000_genomes_sample_list_.tsv
 
+# Convert the info file to map
+$ nano info_to_map.pl
+$ perl info_to_map.pl 1_1-150000.info > 1_1-150000.map
+
+# Use PLINK to generate the binary versions of the ped and map files
+
+# Download PLINK 
+$ wget https://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20220402.zip
+
+# Unzip file
+$ unzip plink_linux_x86_64_20220402.zip
+
+# Installating PLINK 
+$ sudo cp plink /usr/local/bin
+$ sudo chmod 755 /usr/local/bin/plink
+$ sudo nano ~/.bashrc
+
+
+# Making binary versions of the ped and map files
+$ plink --file 1_1-150000 --make-bed --out 1_1-150000
+
+# Use PLINK to perform principal component analysis (PCA)
+$ plink --bfile 1_1-150000 --pca -- 1_1-150000
+$ plink --bed 1_1-150000.bed --bim 1_1-150000.bim --fam 1_1-150000.fam --pca
+
+# The output of this command were two files named plink.eigenval and plink.eigenvec. The two files were downloaded and fed into R studio to draw the PCA plot
+
+# A new directory was set up using the setwd () command.
+setwd ("/Users/eniolaonabowale/Documents/HackBio/Stage 3")
+
+# Ggplot was Installed and loaded to enable visualization of the data
+ install.packages("ggplot2")
+ library("ggplot2")
+ 
+ # The complete 1000 genomes sample list data was read from the tsv file
+ metadata <- read.table("/Users/eniolaonabowale/Documents/HackBio/Stage 3/complete_1000_genomes_sample_list_.tsv", sep = "\t", header = TRUE)
+
+# The eigenvec file was read
+pca1 <- read.table ("/Users/eniolaonabowale/Documents/HackBio/Stage 3/plink.eigenvec", sep = " ", header = F)
+
+# The data from pca1 and metadata were merged into a file named merge_data1 using the columns that had the same content in the two files.
+merge_data1 <- merge(x= pca1,y= metadata,by.x = "V2", by.y = "Sample.name", all = F)
+
+# The PCA plot was generated from the merge_data1 file. The first (V3) and second (V4) principal components were plotted against each other using the following command
+ggplot(data = merge_data1, aes(V3,V4,color = Superpopulation.code)) + geom_point(size = 2.5) + scale_color_brewer(palette = "Set1") + theme_classic() + labs(title = "PCA Plot 1") + xlab("pca1") + ylab("pca2") +
++   theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 30), axis.title.x = element_text(face = "italic", color = "blue", size = 14), axis.title.y = element_text(face = "italic", color = "#993333", size = 14))
+
